@@ -7,12 +7,13 @@ class Note(ctk.CTk):
         self.geometry('800x500')
         self._set_appearance_mode('dark')
         
+        mainMenu = ctk.CTkOptionMenu(self, values=['one', 'two', 'three', 'four'])
+        mainMenu.pack()
+        
         textArea = ctk.CTkTextbox(self, font=("Arial", 20))
         textArea.pack(fill='both', expand=True)
         
-        mainMenu = ctk.CTkOptionMenu(self)
         
-        fileMenu = ctk.CTkOptionMenu(mainMenu,)
         
         
         
