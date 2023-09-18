@@ -14,9 +14,9 @@ note_data = ".data/.noteList.txt"
 class NoteBook:
     def __init__(self):
         '''initially create button -> add note & add label'''
-        self.mkdir(lbl_data) # to make initial files and dirs
-        self.mkdir(note_data) # to make initial files and dirs
-        
+        self.mkdir(lbl_data)  # to make initial files and dirs
+        self.mkdir(note_data)  # to make initial files and dirs
+
         self.button(navFrame, "Images/add.png", "New Note",
                     (30, 30), self.noteTitle)  # Add note
         self.button(navFrame, "Images/archive.png", "Archive\t",
@@ -29,7 +29,12 @@ class NoteBook:
                      text_color="#aaa", height=40).pack()  # label heading
         self.button(navFrame, "Images/add2.png", "Add Label",
                     (20, 20), self.labelTitle)  # label Button
-        
+        ctk.CTkLabel(windowFrame, text="All Notes: ",
+                     font=("Arial", 20, 'bold')).pack()
+
+        # call the displayBote method to create buttons in windowFrame
+        self.displayNotes()
+
     def mkdir(self, data_path):
         '''will make necesarry files and dirs'''
         if not os.path.exists(".data"):
@@ -76,14 +81,12 @@ class NoteBook:
                     f2.write(f"{title},")
                     f2.close()
 
-
             self.button(navFrame, "Images/label.png",
                         btnName, (40, 30), command)
 
         else:
             label_path = f".data/.{title}/.{title}.txt"
             messagebox.showerror("error", "Label Alrady Exists.")
-            
 
     def noteTitle(self):
         dialog = ctk.CTkInputDialog(text="Note Name...", title='New Note', )
@@ -91,22 +94,21 @@ class NoteBook:
 
         if ttl == '':
             ttl = "New Note - 1"
-        
+
         self.addNote(ttl)
-        
+
         # call the Note class to get top-label
         new_note = Note(ttl, note_path)
-        
 
-        
     def addNote(self, title):
         '''this function add the new label(directory) and make a file as name of directory'''
         global note_path, file_content
         # to make title like dir and txt file
         if not os.path.exists(f".data/.notes/.{title}.txt"):
             with open(f".data/.notes/.{title}.txt", "w") as f1:
-                note_path = f".data/.notes/.{title}.txt"
+                f1.write(f"Title: {title}\n\n")
                 f1.close()
+                note_path = f".data/.notes/.{title}.txt"
 
             # labelList.txt for write all title to track next time
             with open(note_data, "r+") as f2:
@@ -120,16 +122,27 @@ class NoteBook:
 
         else:
             note_path = f".data/.notes/.{title}.txt"
-            
+
             # if note alrady exists, then we need file content and write in top-label
             with open(note_path, "r") as f3:
                 file_content = f3.read()
                 f3.close()
-        
-    
-    def displayNotes(self):
-        pass
 
+    def displayNotes(self):
+        '''this will open all files with note and insert in main window'''
+        with open(note_data, 'r') as f:
+            content = f.read().split(',')
+            content.pop()  # remove last element of list which is -> ''
+            f.close()
+
+        for fileName in content:
+            f_path = f".data/.notes/.{fileName}.txt"
+            if os.path.exists(f_path):
+                with open(f_path, 'r') as f2:
+                    fileInfo = f2.read()
+                    f2.close()
+
+                self.noteBtn(fileInfo)
 
     def settings(self):
         pass
@@ -144,10 +157,16 @@ class NoteBook:
         '''This is universal Label function'''
         global label_path
         print('label called')
-        
-        
-    
 
+    def noteBtn(self, content):
+        '''make a button with notes data'''
+        btn = ctk.CTkButton(windowFrame, text=content, fg_color="#222", hover=False, font=(
+            "Arial", 18), text_color="#aaa", corner_radius=10, border_spacing=10, border_color='#444', border_width=1, command=self.openFile)
+        btn.pack(padx=10, pady=10)
+        
+    def openFile(self):
+        pass
+    
 
 class Note(ctk.CTkToplevel):
     def __init__(self, ttl, filePath):
@@ -156,7 +175,6 @@ class Note(ctk.CTkToplevel):
         self.title(f"{ttl} - MyNotes")
         self.geometry('800x500')
         self._set_appearance_mode('dark')
-        
 
         self.noteFrame = ctk.CTkFrame(self, fg_color="#222")
         self.noteFrame.pack(fill='y', side='left')
@@ -165,7 +183,7 @@ class Note(ctk.CTkToplevel):
         self.textArea = ctk.CTkTextbox(
             self, font=("Arial", self.font_size), undo=True)
         self.textArea.pack(fill='both', expand=True)
-        
+
         # add content in text area, if the file exists and any content exists
         if file_content is not None:
             self.textArea.insert(1.0, text=file_content)
@@ -213,9 +231,10 @@ class Note(ctk.CTkToplevel):
             content = self.textArea.get(1.0, 'end')
             f.write(content)
             f.close()
-            
+
             self.lift()
-            messagebox.showinfo("Saved", "Successfully Saved Changes.", parent=self)
+            messagebox.showinfo(
+                "Saved", "Successfully Saved Changes.", parent=self)
 
     def clear(self):
         '''this function just erase all text from self.textArea'''
@@ -252,7 +271,8 @@ class Note(ctk.CTkToplevel):
 
 root = ctk.CTk()
 root._set_appearance_mode('dark')
-root.geometry('900x400')
+root.geometry('1000x500')
+root.resizable(False, False)
 root.title("MyNotes")
 
 
@@ -260,6 +280,9 @@ root.title("MyNotes")
 navFrame = ctk.CTkScrollableFrame(
     root, fg_color='#222', scrollbar_button_color="#444")
 navFrame.pack(side="left", fill="y")
+windowFrame = ctk.CTkScrollableFrame(
+    root, fg_color='#222', scrollbar_button_color="#444", width=800)
+windowFrame.pack(side='left', fill='y')
 
 
 if __name__ == '__main__':
