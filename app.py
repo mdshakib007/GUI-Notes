@@ -2,6 +2,7 @@ import customtkinter as ctk
 from tkinter import messagebox
 from PIL import Image
 import os
+import time
 
 # global variables
 file_content = None
@@ -9,6 +10,9 @@ label_path = None
 note_path = None
 lbl_data = ".data/.labelList.txt"
 note_data = ".data/.noteList.txt"
+now = time.strftime("%b-%d, %Y at %I:%M %p")
+
+
 
 
 class NoteBook:
@@ -89,7 +93,7 @@ class NoteBook:
             messagebox.showerror("error", "Label Alrady Exists.")
 
     def noteTitle(self):
-        dialog = ctk.CTkInputDialog(text="Note Name...", title='New Note', )
+        dialog = ctk.CTkInputDialog(text="New Note or ...\n*To open an existing note, you can give 'title' which you want to open!", title='New Note', )
         ttl = dialog.get_input()
 
         if ttl == '':
@@ -106,7 +110,7 @@ class NoteBook:
         # to make title like dir and txt file
         if not os.path.exists(f".data/.notes/.{title}.txt"):
             with open(f".data/.notes/.{title}.txt", "w") as f1:
-                f1.write(f"Title: {title}\n\n")
+                f1.write(f"\nNote: {title} (edited)\n-----({now})-----\n\n")
                 f1.close()
                 note_path = f".data/.notes/.{title}.txt"
 
@@ -145,13 +149,16 @@ class NoteBook:
                 self.noteBtn(fileInfo)
 
     def settings(self):
-        pass
+        messagebox.showinfo("Help", "Sorry this service is not available at this moment!")
+
 
     def trash(self):
-        pass
+        messagebox.showinfo("Help", "Sorry this service is not available at this moment!")
+
 
     def archive(self):
-        pass
+        messagebox.showinfo("Help", "Sorry this service is not available at this moment!")
+
 
     def label(self):
         '''This is universal Label function'''
@@ -165,14 +172,15 @@ class NoteBook:
         btn.pack(padx=10, pady=10)
         
     def openFile(self):
-        pass
+        messagebox.showinfo("Help", "Sorry this service is not available at this moment!\nTo open an existing note, you can press 'New Note' button and give 'title' which you want to open!")
+
     
 
 class Note(ctk.CTkToplevel):
     def __init__(self, ttl, filePath):
         super().__init__()
         self.filePath = filePath
-        self.title(f"{ttl} - MyNotes")
+        self.title(f"{ttl}  -  Note")
         self.geometry('800x500')
         self._set_appearance_mode('dark')
 
@@ -249,7 +257,7 @@ class Note(ctk.CTkToplevel):
             self.textArea.delete(1.0, "end")
 
     def help(self):
-        pass
+        messagebox.showinfo("Help", "Sorry this service is not available at this moment!")
 
     def zoomIn(self):
         self.font_size = self.font_size + 2
